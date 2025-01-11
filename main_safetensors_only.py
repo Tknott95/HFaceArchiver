@@ -1,6 +1,6 @@
 import argparse
-import os
 from huggingface_hub import HfApi, hf_hub_download
+import os
 
 # Define default download location
 DEFAULT_DL_LOC = "/mnt/id3/ModelsArchive"
@@ -10,6 +10,9 @@ YELLOW = "\033[93m"
 CYAN = "\033[96m"
 GREEN = "\033[92m"
 RESET = "\033[0m"
+
+# Define model file extensions to filter
+MODEL_EXTENSIONS = {".bin", ".pt", ".h5", ".onnx", ".ckpt", ".safetensors"}
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Download model files from a Hugging Face repository.")
@@ -29,16 +32,13 @@ print(
 # Ensure the target directory exists
 os.makedirs(target_loc, exist_ok=True)
 
-# Define the file extensions for model files
-MODEL_EXTENSIONS = [".safetensors", ".bin", ".json", ".pt", ".h5", ".ckpt", "tokenizer.json"]
-
-# Initialize the Hugging Face API
+# Initialize Hugging Face API
 api = HfApi()
 
-# Get the list of files in the repository
-files = api.list_repo_files(args.repo)
+# Fetch file list from the repository
+files = api.list_repo_files(repo_id=args.repo)
 
-# Filter files for model-related extensions
+# Filter files for model extensions
 model_files = [file for file in files if any(file.endswith(ext) for ext in MODEL_EXTENSIONS)]
 
 if not model_files:
@@ -48,3 +48,4 @@ else:
         # Download each model file
         local_path = hf_hub_download(repo_id=args.repo, filename=model_file, cache_dir=target_loc)
         print(f"{GREEN}Downloaded: {model_file} to {local_path}{RESET}")
+
