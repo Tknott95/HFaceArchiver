@@ -12,7 +12,7 @@ GREEN = "\033[92m"
 RESET = "\033[0m"
 
 # Define model file extensions to filter
-MODEL_EXTENSIONS = {".bin", ".pt", ".h5", ".onnx", ".ckpt", ".safetensors"}
+MODEL_EXTENSIONS = {".bin", ".pt", ".h5", ".onnx", ".ckpt", ".safetensors", ".json", ".txt"}
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Download model files from a Hugging Face repository.")
