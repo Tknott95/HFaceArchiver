@@ -2,8 +2,9 @@ import argparse
 import os
 from huggingface_hub import HfApi, hf_hub_download
 
-# Define default download location
+# Define default download location and batch size
 DEFAULT_DL_LOC = "/mnt/id3/ModelsArchive"
+DEFAULT_BATCH_SIZE = 2
 
 # Define ANSI colors for styled output
 YELLOW = "\033[93m"
@@ -12,18 +13,21 @@ GREEN = "\033[92m"
 RESET = "\033[0m"
 
 # Argument parser setup
-parser = argparse.ArgumentParser(description="Download all files from a Hugging Face repository.")
+parser = argparse.ArgumentParser(description="Download all files from a Hugging Face repository in batches.")
 parser.add_argument("--repo", required=True, help="The repository ID (e.g., StephanST/WALDO30 or stabilityai/stable-diffusion-3.5-large).")
-parser.add_argument("--target", help="The target folder to save the repository.")
+parser.add_argument("--target", default=DEFAULT_DL_LOC, help=f"The target folder to save the repository (default: {DEFAULT_DL_LOC}).")
+parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help=f"The number of files to download per batch (default: {DEFAULT_BATCH_SIZE}).")
 args = parser.parse_args()
 
-# Resolve target download location
-target_loc = args.target if args.target else DEFAULT_DL_LOC
+# Use argument values directly
+target_loc = args.target
+batch_size = args.batch_size
 
 # Print download details
 print(
     f"\n{YELLOW}Downloading all files from - {CYAN}MODEL: {GREEN}{args.repo} "
-    f"{CYAN}LOC: {GREEN}{target_loc}{RESET}\n"
+    f"{CYAN}LOC: {GREEN}{target_loc} "
+    f"{CYAN}BATCH SIZE: {GREEN}{batch_size}{RESET}\n"
 )
 
 # Ensure the target directory exists
@@ -35,11 +39,19 @@ api = HfApi()
 # Get the list of files in the repository
 files = api.list_repo_files(args.repo)
 
-# Download all files in the repository
+# Download files in batches
 if not files:
     print(f"{YELLOW}No files found in the repository: {args.repo}{RESET}")
 else:
-    for file in files:
-        # Download each file
-        local_path = hf_hub_download(repo_id=args.repo, filename=file, cache_dir=target_loc)
-        print(f"{GREEN}Downloaded: {file} to {local_path}{RESET}")
+    # Process files in batches
+    for i in range(0, len(files), batch_size):
+        batch = files[i:i + batch_size]  # Select a batch of files
+        print(f"{CYAN}Processing batch: {batch}{RESET}")
+
+        for file in batch:
+            try:
+                # Download each file in the current batch
+                local_path = hf_hub_download(repo_id=args.repo, filename=file, cache_dir=target_loc)
+                print(f"{GREEN}Downloaded: {file} to {local_path}{RESET}")
+            except Exception as e:
+                print(f"{YELLOW}Failed to download {file}: {e}{RESET}")
