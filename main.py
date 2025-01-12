@@ -1,5 +1,6 @@
 import argparse
 import os
+import threading
 from huggingface_hub import HfApi, hf_hub_download
 
 # Define default download location and batch size
@@ -39,19 +40,31 @@ api = HfApi()
 # Get the list of files in the repository
 files = api.list_repo_files(args.repo)
 
-# Download files in batches
+# Define the function to download a batch of files
+def download_batch(batch):
+    for file in batch:
+        try:
+            # Download each file in the current batch
+            local_path = hf_hub_download(repo_id=args.repo, filename=file, cache_dir=target_loc)
+            print(f"{GREEN}Downloaded: {file} to {local_path}{RESET}")
+        except Exception as e:
+            print(f"{YELLOW}Failed to download {file}: {e}{RESET}")
+
+# Download files in batches, using threading
 if not files:
     print(f"{YELLOW}No files found in the repository: {args.repo}{RESET}")
 else:
     # Process files in batches
+    threads = []
     for i in range(0, len(files), batch_size):
         batch = files[i:i + batch_size]  # Select a batch of files
         print(f"{CYAN}Processing batch: {batch}{RESET}")
+        
+        # Start a thread to download the batch
+        thread = threading.Thread(target=download_batch, args=(batch,))
+        threads.append(thread)
+        thread.start()
 
-        for file in batch:
-            try:
-                # Download each file in the current batch
-                local_path = hf_hub_download(repo_id=args.repo, filename=file, cache_dir=target_loc)
-                print(f"{GREEN}Downloaded: {file} to {local_path}{RESET}")
-            except Exception as e:
-                print(f"{YELLOW}Failed to download {file}: {e}{RESET}")
+    # Wait for all threads to finish
+    for thread in threads:
+        thread.join()
