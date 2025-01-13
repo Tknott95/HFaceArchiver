@@ -11,6 +11,7 @@ DEFAULT_BATCH_SIZE = 2
 YELLOW = "\033[93m"
 CYAN = "\033[96m"
 GREEN = "\033[92m"
+GREEN_BOLD = "\033[92;1m"
 RESET = "\033[0m"
 
 # Argument parser setup
@@ -83,3 +84,5 @@ else:
     # Wait for all threads to finish
     for thread in threads:
         thread.join()
+
+print(f"{GREEN_BOLD}\n\n    All files downloaded successfully!{RESET}\n")
