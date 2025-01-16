@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # YOU MUST HAVE A models.txt file
+# NEEDS SPACE AT END
 models_file="models.txt"
 
 # Check if the file exists
