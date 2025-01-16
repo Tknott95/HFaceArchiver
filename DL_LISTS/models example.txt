@@ -1,0 +1,3 @@
+stabilityai/stable-audio-open-1.0
+stabilityai/stable-point-aware-3d
+google/codegemma-7b
