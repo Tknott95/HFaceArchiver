@@ -16,7 +16,7 @@ while IFS= read -r model; do
   [[ -z "$model" || "$model" == \#* ]] && continue
 
   echo "Running model: $model"
-  python ../main.py --batch-size 3 --repo "$model" --target /mnt/id3/ModelsArchive/
+  python ../main.py --batch-size 5 --repo "$model" --target /mnt/id3/ModelsArchive/
   
   # Check if the command succeeded
   if [[ $? -ne 0 ]]; then
