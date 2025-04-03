@@ -1,6 +1,5 @@
 stabilityai/stable-audio-open-1.0
 deepseek-ai/Janus-Pro-7B
-deepseek-ai/Janus-Pro-1B
 deepseek-ai/JanusFlow-1.3Janus-Pro-7B
 deepseek-ai/Janus-1.3B
 
