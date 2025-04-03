@@ -16,7 +16,7 @@
 
 INSTALL DOCS: https://huggingface.co/docs/huggingface_hub/en/installation
 
-**DEFAULT BATCH SIZE: 2**
+**DEFAULT BATCH SIZE: 3**
 
 ##### EXAMPLE
  **with default target**
